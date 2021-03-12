@@ -3,7 +3,7 @@ const { JSDOM } = require("jsdom");
 const fs = require("fs/promises");
 const sto = require("timers/promises");
 
-const EXEC_TIMES = 60;
+const EXEC_TIMES = 120;
 
 const send_pv_req = async ({ cookie, config }, chaperid) => {
   const url = `https://fystat-ans.chaoxing.com/log/setlog?personid=${config.personid}&courseId=${config.courseId}&classId=${config.classId}&encode=${config.encode}&chapterId=${chaperid}`;
@@ -42,6 +42,11 @@ const menu = async ({ cookie, config }) => {
   await menu(ctx);
   console.log(chapterid_list);
 
+  if (chapterid_list.length === 0) {
+    console.error('Fetch chapterid_list failed, please check cookie / config');
+    process.exit(-1);
+  }
+
   for (let i = 0; i < EXEC_TIMES; i++) {
     const res = await send_pv_req(
       ctx,
@@ -51,7 +56,7 @@ const menu = async ({ cookie, config }) => {
       process.exit(-1);
     }
 
-    await sto.setTimeout(~~(10000 * Math.random()));
+    await sto.setTimeout(~~(20000 * Math.random()));
     console.log(`Done #${i}`);
   }
 })();
